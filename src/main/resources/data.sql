@@ -289,8 +289,8 @@ CREATE TABLE `reservation` (
      `reserved_by` int NOT NULL,
      `hotel_id` int NOT NULL,
      `room_id` int NOT NULL,
-     `check_in` date NOT NULL,
-     `check_out` date NOT NULL,
+     `check_in` timestamp NOT NULL,
+     `check_out` timestamp NOT NULL,
      `status` varchar(50) NOT NULL default 'ACTIVE',
      PRIMARY KEY (`id`)
 );

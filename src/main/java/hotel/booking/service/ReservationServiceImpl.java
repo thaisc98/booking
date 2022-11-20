@@ -16,6 +16,8 @@ import java.util.Objects;
 @Service
 public class ReservationServiceImpl implements ReservationService {
 
+    private static final long HOURS = 60 * 60 * 1000;
+
     @Autowired
     private ReservationRepository reservationRepository;
 
@@ -30,10 +32,11 @@ public class ReservationServiceImpl implements ReservationService {
 
         //conditions for save a reservation
         //1. Room can be booked 24 hours before the check-in date and no more than 1 month in advance.
-        LocalDateTime now = LocalDateTime.now();
-        long days = ChronoUnit.DAYS.between(now, reservation.getCheckIn());
-        if(!reservation.getCheckIn().isBefore(now.minusDays(1)) || days < -31){
-           throw new IllegalArgumentException("Room can be booked 24 hours before the check-in date and no more than 1 month in advance, please try again.");
+        long hoursBetweenDates = getHoursBetweenDates(reservation.getCheckIn());
+        long days = ChronoUnit.DAYS.between(LocalDateTime.now(), reservation.getCheckIn());
+
+        if(hoursBetweenDates < 24 || days < -31){
+            throw new IllegalArgumentException("Room can be booked 24 hours before the check-in date and no more than 1 month in advance, please try again.");
         }
 
         //2. A user can book a room for a duration of 1 to 5 days.
@@ -75,6 +78,13 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public Reservation cancel(long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId);
+        // conditions
+        // A user cannot cancel a reservation 24 hours before the booked date
+        long hoursBetweenDates = getHoursBetweenDates(reservation.getCheckIn());
+        if(hoursBetweenDates < 24){
+            throw new IllegalArgumentException("Cannot cancel a reservation 24 hours before the booked date, please contact support.");
+        }
+
         reservation.setStatus("CANCELLED");
 
         Room room = roomRepository.findRoomById(reservation.getRoomId());
@@ -86,6 +96,14 @@ public class ReservationServiceImpl implements ReservationService {
         hotelRepository.save(hotel);
 
         return reservation;
+    }
+
+    private long getHoursBetweenDates(LocalDateTime checkInDate) {
+        LocalDateTime now = LocalDateTime.now();
+        long nowMS = now.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        long bookedDateMS = checkInDate.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        long msBetweenDates = Math.abs(bookedDateMS - nowMS);
+        return msBetweenDates / HOURS;
     }
 
 }
