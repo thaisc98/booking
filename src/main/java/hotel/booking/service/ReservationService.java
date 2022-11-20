@@ -5,9 +5,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface ReservationService {
+
     // save operation
     Reservation save(Reservation reservation);
     Reservation update(Reservation reservation, long reservationId);
-
     Reservation cancel(long reservationId);
 }
