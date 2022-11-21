@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.*;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -135,6 +136,11 @@ public class ReservationServiceImpl implements ReservationService {
         hotelRepository.save(hotel);
 
         return reservation;
+    }
+
+    @Override
+    public List<Reservation> findReservationsByReservedBy(long userId) {
+        return reservationRepository.findReservationsByReservedBy(userId);
     }
 
     private long getHoursBetweenDates(LocalDateTime checkInDate) {

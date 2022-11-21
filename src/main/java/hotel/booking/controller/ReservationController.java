@@ -1,7 +1,6 @@
 package hotel.booking.controller;
 
 import hotel.booking.model.Reservation;
-import hotel.booking.repository.ReservationRepository;
 import hotel.booking.service.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,9 +16,6 @@ public class ReservationController {
     @Autowired
     private ReservationService reservationService;
 
-    @Autowired
-    private ReservationRepository reservationRepository;
-
     /***
      * Get all reservations/booked by user id
      * @param id is the user id
@@ -27,7 +23,7 @@ public class ReservationController {
      */
     @GetMapping("/reservation/by-user/{id}")
     public ResponseEntity<List<Reservation>> getReservationsByUserId(@PathVariable long id){
-        List<Reservation> reservations = reservationRepository.findReservationsByReservedBy(id);
+        List<Reservation> reservations = reservationService.findReservationsByReservedBy(id);
         return new ResponseEntity<>(Objects.nonNull(reservations) ? reservations : null, HttpStatus.OK);
     }
 
@@ -38,7 +34,7 @@ public class ReservationController {
      */
     @PostMapping("/reservation")
     public ResponseEntity<Reservation> saveReservation(@RequestBody Reservation reservation) {
-        return new ResponseEntity<>(reservationService.save(reservation), HttpStatus.OK);
+        return new ResponseEntity<>(reservationService.save(reservation), HttpStatus.CREATED);
     }
 
     /***

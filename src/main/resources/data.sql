@@ -17,7 +17,7 @@ VALUES ('eladioH', 'Eladio', 'Carrion');
 INSERT INTO `user` (`login`, `name`, `last_name`)
 VALUES ('mbappe', 'Kylian', 'Mbappe');
 
-DROP TABLE IF EXISTS country;
+DROP TABLE IF EXISTS `country`;
 
 CREATE TABLE `country` (
     `key` varchar(100) NOT NULL,
@@ -34,7 +34,7 @@ VALUES ('DR', 'Dominican Republic');
 INSERT INTO `country` (`key`, `name`)
 VALUES ('PR', 'Puerto Rico');
 
-DROP TABLE IF EXISTS hotel;
+DROP TABLE IF EXISTS `hotel`;
 
 CREATE TABLE `hotel` (
        `id` int NOT NULL AUTO_INCREMENT,
