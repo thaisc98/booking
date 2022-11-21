@@ -4,6 +4,8 @@ import hotel.booking.model.Reservation;
 import hotel.booking.repository.ReservationRepository;
 import hotel.booking.service.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,9 +26,9 @@ public class ReservationController {
      * @return list of all reservations
      */
     @GetMapping("/reservation/by-user/{id}")
-    public List<Reservation> getReservationsByUserId(@PathVariable long id){
+    public ResponseEntity<List<Reservation>> getReservationsByUserId(@PathVariable long id){
         List<Reservation> reservations = reservationRepository.findReservationsByReservedBy(id);
-        return Objects.nonNull(reservations) ? reservations : null;
+        return new ResponseEntity<>(Objects.nonNull(reservations) ? reservations : null, HttpStatus.OK);
     }
 
     /***
@@ -35,8 +37,8 @@ public class ReservationController {
      * @return the same object of reservation
      */
     @PostMapping("/reservation")
-    public Reservation saveReservation(@RequestBody Reservation reservation) {
-        return reservationService.save(reservation);
+    public ResponseEntity<Reservation> saveReservation(@RequestBody Reservation reservation) {
+        return new ResponseEntity<>(reservationService.save(reservation), HttpStatus.OK);
     }
 
     /***
@@ -45,8 +47,8 @@ public class ReservationController {
      * @return object of reservation with the status "CANCELLED"
      */
     @PostMapping("/reservation/cancel/{id}")
-    public Reservation cancelReservation(@PathVariable long id) {
-        return reservationService.cancel(id);
+    public ResponseEntity<Reservation> cancelReservation(@PathVariable long id) {
+        return new ResponseEntity<>(reservationService.cancel(id), HttpStatus.OK);
     }
 
     /***
@@ -56,8 +58,8 @@ public class ReservationController {
      * @return the modified reservation
      */
     @PutMapping("/reservation/{id}")
-    public Reservation updateReservation(@RequestBody Reservation newReservation, @PathVariable long id) {
-        return reservationService.update(newReservation, id);
+    public  ResponseEntity<Reservation> updateReservation(@RequestBody Reservation newReservation, @PathVariable long id) {
+        return new ResponseEntity<>(reservationService.update(newReservation, id), HttpStatus.OK);
     }
 
 }

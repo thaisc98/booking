@@ -5,6 +5,8 @@ import hotel.booking.model.Room;
 import hotel.booking.repository.HotelRepository;
 import hotel.booking.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,14 +24,14 @@ public class HotelController {
     private HotelRepository hotelRepository;
 
     @GetMapping("/hotels")
-    public List<Hotel> getAllHotels(){
+    public ResponseEntity<List<Hotel>> getAllHotels(){
         List<Hotel> hotels = hotelRepository.findAll();
-        return Objects.nonNull(hotels) ? hotels : null;
+        return new ResponseEntity<>(Objects.nonNull(hotels) ? hotels : null, HttpStatus.OK);
     }
 
     @GetMapping("/hotel/rooms-available")
-    public List<Room> getAllAvailableRoomsByHotelId(@RequestBody Hotel hotel){
+    public ResponseEntity<List<Room>> getAllAvailableRoomsByHotelId(@RequestBody Hotel hotel){
         List<Room> rooms = roomRepository.findRoomsByHotelIdAndStatusEquals(hotel.getId(), "AVAILABLE");
-        return Objects.nonNull(rooms) ? rooms : null;
+        return new ResponseEntity<>(Objects.nonNull(rooms) ? rooms : null, HttpStatus.OK);
     }
 }
