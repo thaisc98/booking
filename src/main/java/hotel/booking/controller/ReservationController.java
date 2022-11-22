@@ -53,7 +53,7 @@ public class ReservationController {
      * @param id of the reservation
      * @return the modified reservation
      */
-    @PutMapping("/reservation/{id}")
+    @PatchMapping("/reservation/{id}")
     public  ResponseEntity<Reservation> updateReservation(@RequestBody Reservation newReservation, @PathVariable long id) {
         return new ResponseEntity<>(reservationService.update(newReservation, id), HttpStatus.OK);
     }
