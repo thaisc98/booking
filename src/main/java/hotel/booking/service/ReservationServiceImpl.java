@@ -8,6 +8,7 @@ import hotel.booking.repository.RoomRepository;
 import hotel.booking.repository.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.webjars.NotFoundException;
 
 import java.time.*;
 import java.time.temporal.ChronoUnit;
@@ -36,12 +37,19 @@ public class ReservationServiceImpl implements ReservationService {
 
         //3. Room should be available
         Room room = roomRepository.findRoomById(reservation.getRoomId());
+        if(Objects.isNull(room)){
+            throw new NotFoundException("Room not found, please choose another more comfortable room.");
+        }
+
         if(room.getStatus().equals("RESERVED")){
             throw new IllegalArgumentException("The room is not available, please choose another more comfortable room.");
         }
 
         //4. Hotel should have available rooms
         Hotel hotel = hotelRepository.findHotelById(reservation.getHotelId());
+        if(Objects.isNull(hotel)){
+            throw new NotFoundException("Hotel not found, please choose another more comfortable room.");
+        }
         if(hotel.getAvailableRooms() == 0){
             throw new IllegalArgumentException(String.format("The hotel %s has no available rooms, please try again later.", hotel.getName()));
         }
@@ -76,6 +84,9 @@ public class ReservationServiceImpl implements ReservationService {
         //4. Check if the new reservation hotel its diff from the old one
         if(oldReservation.getHotelId() != reservation.getHotelId()){
             Hotel hotel = hotelRepository.findHotelById(reservation.getHotelId());
+            if(Objects.isNull(hotel)){
+                throw new NotFoundException("Hotel not found, please choose another more comfortable room.");
+            }
             if(hotel.getAvailableRooms() == 0) {
                 throw new IllegalArgumentException(String.format("The hotel %s has no available rooms, please try again later.", hotel.getName()));
             }
@@ -84,9 +95,24 @@ public class ReservationServiceImpl implements ReservationService {
         //5. Check if the new reservation room its diff from the old one
         if(oldReservation.getRoomId() != reservation.getRoomId()){
             Room room = roomRepository.findRoomById(reservation.getRoomId());
+            if(Objects.isNull(room)){
+                throw new NotFoundException("Room not found, please choose another more comfortable room.");
+            }
             if(room.getStatus().equals("RESERVED")){
                 throw new IllegalArgumentException("The room is not available, please choose another more comfortable room.");
             }
+            //put available old room ->
+            Room oldRoom = roomRepository.findRoomById(oldReservation.getRoomId());
+            oldRoom.setStatus("AVAILABLE");
+            oldRoom.setId(oldRoom.getId());
+            oldRoom.setId(oldRoom.getHotelId());
+            roomRepository.save(oldRoom);
+
+            // put reserved new room
+            room.setStatus("RESERVED");
+            room.setId(reservation.getRoomId());
+            room.setHotelId(reservation.getHotelId());
+            roomRepository.save(room);
         }
         // update all
         oldReservation.setHotelId(reservation.getHotelId());
